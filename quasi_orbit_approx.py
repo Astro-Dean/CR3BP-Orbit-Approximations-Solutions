@@ -32,7 +32,7 @@ def astro_values(M,D,Y,hr,min,sec):
     Omega = (125.04452 - 1934.136261*T + 0.0020708*T**2 + T**3/450000)
     return eps, eps_prime, lun_peri, sun_peri, Omega
 
-def third_order_solution(Ay, Az, m, T, num_points, theta1, theta2, date):
+def third_order_solution_lissajous(Ay, Az, m, T, num_points, theta1, theta2, date):
     """
     Using the third-order solution for quasi-periodic Lissajous orbits
     at L2 Lagranina libration point found by Farquhar and Kamel
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     num_points = 10000
     theta1 = theta2 = 0
     date = [10, 18, 2025, 0, 0, 0]
-    x, y, z = third_order_solution(Ay, Az, m, T, num_points, theta1, theta2, date)
+    x, y, z = third_order_solution_lissajous(Ay, Az, m, T, num_points, theta1, theta2, date)
     plt.figure(figsize=(8,8))
     plt.plot(x, y)
     plt.axis('equal')
@@ -163,4 +163,5 @@ if __name__ == "__main__":
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
+
     plt.show()
