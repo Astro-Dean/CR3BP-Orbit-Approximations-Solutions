@@ -35,7 +35,7 @@ def astro_values(M,D,Y,hr,min,sec):
 def third_order_solution_lissajous(Ay, Az, m, T, num_points, theta1, theta2, date):
     """
     Using the third-order solution for quasi-periodic Lissajous orbits
-    at L2 Lagranina libration point found by Farquhar and Kamel
+    at L2 Lagrangian libration point found by Farquhar and Kamel
     
     Found here:
     Farquhar, R. W., & Kamel, A. A. (1973). Quasi-periodic orbits about the translunar libration point.
@@ -165,3 +165,4 @@ if __name__ == "__main__":
     ax.set_zlabel("Z")
 
     plt.show()
+
