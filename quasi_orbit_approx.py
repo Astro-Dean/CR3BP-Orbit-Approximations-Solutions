@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from math import floor
 
 def UTC2JDT(M, D, Y, hr, min, sec, msec=0.0):
     if M < 1 or M > 12:
@@ -32,38 +31,34 @@ def astro_values(M,D,Y,hr,min,sec):
     Omega = (125.04452 - 1934.136261*T + 0.0020708*T**2 + T**3/450000)
     return eps, eps_prime, lun_peri, sun_peri, Omega
 
-def third_order_solution_lissajous(Ay, Az, m, T, num_points, theta1, theta2, date):
+def constants(m, tf, num_points, date):
+    t = np.linspace(0, tf, num_points)
+    M, D, Y, hr, min, sec = date
+    eps, eps_prime, omega, _, _ = np.radians(astro_values(M,D,Y,hr,min,sec))
+    
+    xi = (1 - m)*t + eps - eps_prime
+    phi = (1 - (3/4)*m**2 - (225/32)*m**3)*t + eps - omega
+    return xi, phi, t
+
+
+def third_order_solution_lissajous(Ay, Az, m, tf, num_points, theta1, theta2, date):
     """
     Using the third-order solution for quasi-periodic Lissajous orbits
-    at L2 Lagrangian libration point found by Farquhar and Kamel
+    at L2 Lagranina libration point found by Farquhar and Kamel
     
     Found here:
     Farquhar, R. W., & Kamel, A. A. (1973). Quasi-periodic orbits about the translunar libration point.
     Celestial Mechanics, 7(4), 458-473. https://doi.org/10.1007/BF01227511
+
+    
     """
 
     e = 0.054900489         # moons eccentricity
-    ep = 0.0167217          # Earths eccentricity
-    aap = 0.0025093523      # ratio of the semimajor axes for the orbits of Earth and the Moon
-    gamma = 0.0900463066    # tangent of the mean inclination of the Moon's orbit
     wxy0 = 1.865485
     wz0 = 1.794291
-    a = 2.000034
-    b = 7.436984
-    c = 2.204904
-    d = 3.219481
-    BL = 3.190423657
-    CL = 2.659334398
-    DL = 2.538009811
-    EL = 2.572040953
-    k = a*wxy0/(b + wxy0**2)
-    t = np.linspace(0, T, num_points)
-    M, D, Y, hr, min, sec = date
-    eps, eps_prime, omega, omega_prime, Omega0 = np.radians(astro_values(M,D,Y,hr,min,sec))
-    
-    xi = (1 - m)*t + eps - eps_prime
-    phi = (1 - (3/4)*m**2 - (225/32)*m**3)*t + eps - omega
-    
+
+    xi, phi, t = constants(m, tf, num_points, date)
+
     C1 = 0.09210089*(e/m)**2 + 0.02905486*Ay**2 + 0.007644849*Az**2
     wxy2 = 0.1387811*(e/m)**2 + 0.04349909*Ay**2 - 0.04060812*Az**2
     wz2 =  0.5981779*(e/m)**2 - 0.03293845*Ay**2 + 0.03923249*Az**2
@@ -128,6 +123,83 @@ def third_order_solution_lissajous(Ay, Az, m, T, num_points, theta1, theta2, dat
 
     return x, y, z
 
+def third_order_solution_halo(Az, m, tf, num_points, theta, date):
+    """
+    Using the third-order solution for quasi-periodic Halo orbits
+    at L2 Lagranina libration point found by Farquhar and Kamel
+    
+    Found here:
+    Farquhar, R. W., & Kamel, A. A. (1973). Quasi-periodic orbits about the translunar libration point.
+    Celestial Mechanics, 7(4), 458-473. https://doi.org/10.1007/BF01227511
+    """
+
+    e = 0.054900489         # moons eccentricity
+    
+    wxy0 = 1.865485
+    wz0 = 1.794291
+
+    _, phi, t = constants(m, tf, num_points, date)
+
+    Ay_sqrd = 1.176726*Az**2 + 3.358157*(wxy0**2 - wz0**2)/(m*wxy0**2)
+    Ay = np.sqrt(Ay_sqrd)
+
+    w2 = 0.0434986*Ay**2 - 0.1447905*Az**2
+    C1_prime = 0.02905497*Ay**2 + 0.00724195*Az**2
+    omega = wxy0/(1 + m*w2)
+    T = omega*t + theta
+    
+    x1 = 0.341763*Ay*np.sin(T)
+    y1 = Ay*np.cos(T)
+    z1 = Az*np.sin(T)
+
+    x2 = -(0.095884*Ay**2 - 0.120121*Az**2)*np.cos(2*T) - (0.205537*Ay**2 + 0.268186*Az**2)
+    y2 = -(0.055296*Ay**2 + 0.076511*Az**2)*np.sin(2*T)
+    z2 = Ay*Az*(0.1305819*np.cos(2*T) + 0.3917467)
+
+    x3_p1 = C1_prime*Ay*np.sin(T) - (0.030889*Ay*Az**2 - 0.027808*Ay**3)*np.sin(3*T)
+    x3_p2 = (e/m)*Ay*(0.554904*np.sin(phi - T) + 0.493213*np.sin(phi + T)) 
+    x3 = x3_p1 + x3_p2
+    
+    y3_p1 = (0.001354*Ay*Az**2 - 0.027574*Ay**3)*np.cos(3*T)
+    y3_p2 = -(e/m)*Ay*(1.905541*np.cos(phi - T) - 1.210697*np.cos(phi + T))
+    y3 = y3_p1 + y3_p2
+
+    z3_p1 = (0.017581*Az**3 - 0.043703*Ay**2*Az)*np.sin(3*T)
+    z3_p2 = (e/m)*Az*(1.760353*np.sin(phi - T) + 1.020367*np.sin(phi + T))
+    z3 = z3_p1 + z3_p2
+
+    x4_p1 = (0.001411*Az**4 + 0.009169*Ay**2*Az**2 + 0.004593*Ay**4)*np.cos(2*T)
+    x4_p2 = (0.004872*Az**4 - 0.017795*Ay**2*Az**2 + 0.01249*Ay**4)*np.cos(4*T)
+    x4_p3 = -(0.015522*Az**4 + 0.144268*Ay**2*Az**2 + 0.019739*Ay**4)
+    x4_p4 = C1_prime*Ay**2*(0.366625 - 0.011189*np.cos(2*T)) + 2*w2*x2
+    x4_p5 = (e/m)*Az**2*(0.0176197*np.cos(phi) - 0.313443*np.cos(phi - 2*T) + 0.311873*np.cos(phi + 2*T))
+    x4_p6 = (e/m)*Ay**2*(0.173731*np.cos(phi) + 0.325999*np.cos(phi - 2*T) - 0.270446*np.cos(phi + 2*T))
+    x4_p7 = w2*((0.092650*Ay**2 - 0.025891*Az**2)*np.cos(2*T) + 0.411074*Ay**2 + 0.536372*Az**2)
+    x4 = x4_p1 + x4_p2 + x4_p3 + x4_p4 + x4_p5 + x4_p6 + x4_p7
+
+    y4_p1 = -(0.00222*Az**4 + 0.084909*Ay**2*Az**2 - 0.025667*Ay**4)*np.sin(2*T)
+    y4_p2 = -(0.00206*Az**4 + 0.003204*Ay**2*Az**2 - 0.011299*Ay**4)*np.sin(4*T)
+    y4_p3 = -C1_prime*Ay**2*(0.33337*np.sin(2*T)) + 2*w2*y2
+    y4_p4 = -(e/m)*Az**2*(0.152967*np.sin(phi) + 0.137400*np.sin(phi - 2*T) + 0.207667*np.sin(phi + 2*T))
+    y4_p5 = -(e/m)*Ay**2*(0.109498*np.sin(phi) + 0.144553*np.sin(phi - 2*T) + 0.155751*np.sin(phi + 2*T))
+    y4_p6 = -w2*(0.018755*Ay**2 + 0.088820*Az**2)*np.sin(2*T)
+
+    y4 = y4_p1 + y4_p2 + y4_p3 + y4_p4 + y4_p5 + y4_p6
+
+    z4_p1 = (0.026956*Ay*Az**3 + 0.029534*Ay**3*Az)*np.cos(2*T)
+    z4_p2 = (0.011023*Ay*Az**3 - 0.017048*Ay**3*Az)*np.cos(4*T)
+    z4_p3 = 0.068907*Ay*Az**3 + 0.053487*Ay**3*Az
+    z4_p4 = C1_prime*Ay*Az*(1.146253 + 0.382084*np.cos(2*T)) + 2*w2*z2
+    z4_p5 = (e/m)*Ay*Az*(0.179916*np.cos(phi) - 0.3141189*np.cos(phi - 2*T) + 0.356259*np.cos(phi + 2*T))
+    z4_p6 = Ay*Az*(w2 - 0.54097)*(0.080537*np.cos(2*T) - 0.724833)
+    z4 = z4_p1 + z4_p2 + z4_p3 + z4_p4 + z4_p5 + z4_p6
+
+    x = m**(1/2)*x1 + m*x2 + m**(3/2)*x3 + m**2*x4
+    y = m**(1/2)*y1 + m*y2 + m**(3/2)*y3 + m**2*y4
+    z = m**(1/2)*z1 + m*z2 + m**(3/2)*z3 + m**2*z4
+
+    return x, y, z
+
 if __name__ == "__main__":
     Ay = Az = 3500
     m = 1e-5
@@ -165,4 +237,5 @@ if __name__ == "__main__":
     ax.set_zlabel("Z")
 
     plt.show()
+
 
