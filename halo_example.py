@@ -1,5 +1,5 @@
 import numpy as np
-from quasi_orbit_approx import third_order_solution_halo
+from quasi_orbit_approx import fourth_order_solution_halo
 import matplotlib.pyplot as plt
 
 Az = 38000
@@ -10,7 +10,7 @@ theta = 0
 
 date = [10, 19, 2025, 0, 0, 0]  # Month, Day, Year, Hour, Minute, Second
 
-x, y, z = third_order_solution_halo(Az, m, tf, num_points, theta, date)
+x, y, z = fourth_order_solution_halo(Az, m, tf, num_points, theta, date)
 
 plt.figure(figsize=(8,8))
 plt.plot(x, y)
@@ -39,4 +39,5 @@ ax.scatter(0,0, 0, color = "black", marker="*", label="L2 Point")
 ax.set_xlabel("X")
 ax.set_ylabel("Y")
 ax.set_zlabel("Z")
+
 plt.show()
