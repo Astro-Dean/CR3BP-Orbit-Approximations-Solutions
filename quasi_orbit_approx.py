@@ -200,42 +200,7 @@ def third_order_solution_halo(Az, m, tf, num_points, theta, date):
 
     return x, y, z
 
-if __name__ == "__main__":
-    Ay = Az = 3500
-    m = 1e-5
-    T = 20*np.pi
-    num_points = 10000
-    theta1 = theta2 = 0
-    date = [10, 18, 2025, 0, 0, 0]
-    x, y, z = third_order_solution_lissajous(Ay, Az, m, T, num_points, theta1, theta2, date)
-    plt.figure(figsize=(8,8))
-    plt.plot(x, y)
-    plt.axis('equal')
-    plt.xlabel("X")
-    plt.ylabel("Y")
-    plt.grid()
 
-    plt.figure(figsize=(8,8))
-    plt.plot(x, z)
-    plt.axis('equal')
-    plt.xlabel("X")
-    plt.ylabel("Z")
-    plt.grid()
 
-    plt.figure(figsize=(8,8))
-    plt.plot(y, z)
-    plt.axis('equal')
-    plt.xlabel("Y")
-    plt.ylabel("Z")
-    plt.grid()
-
-    fig, ax = plt.subplots(subplot_kw={"projection":"3d"})
-    ax.plot(x,y,z, "b")
-    ax.scatter(0,0,0, "k*", label="L2 Point")
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Z")
-
-    plt.show()
 
 
