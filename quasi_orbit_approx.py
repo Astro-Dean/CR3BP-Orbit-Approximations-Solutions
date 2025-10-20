@@ -44,7 +44,7 @@ def constants(m, tf, num_points, date):
 def third_order_solution_lissajous(Ay, Az, m, tf, num_points, theta1, theta2, date):
     """
     Using the third-order solution for quasi-periodic Lissajous orbits
-    at L2 Lagranina libration point found by Farquhar and Kamel
+    at L2 Lagrangian libration point found by Farquhar and Kamel
     
     Found here:
     Farquhar, R. W., & Kamel, A. A. (1973). Quasi-periodic orbits about the translunar libration point.
@@ -126,7 +126,7 @@ def third_order_solution_lissajous(Ay, Az, m, tf, num_points, theta1, theta2, da
 def third_order_solution_halo(Az, m, tf, num_points, theta, date):
     """
     Using the third-order solution for quasi-periodic Halo orbits
-    at L2 Lagranina libration point found by Farquhar and Kamel
+    at L2 Lagrangian libration point found by Farquhar and Kamel
     
     Found here:
     Farquhar, R. W., & Kamel, A. A. (1973). Quasi-periodic orbits about the translunar libration point.
@@ -199,6 +199,7 @@ def third_order_solution_halo(Az, m, tf, num_points, theta, date):
     z = m**(1/2)*z1 + m*z2 + m**(3/2)*z3 + m**2*z4
 
     return x, y, z
+
 
 
 
