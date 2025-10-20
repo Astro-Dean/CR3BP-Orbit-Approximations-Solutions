@@ -123,9 +123,9 @@ def third_order_solution_lissajous(Ay, Az, m, tf, num_points, theta1, theta2, da
 
     return x, y, z
 
-def third_order_solution_halo(Az, m, tf, num_points, theta, date):
+def fourth_order_solution_halo(Az, m, tf, num_points, theta, date):
     """
-    Using the third-order solution for quasi-periodic Halo orbits
+    Using the fourth-order solution for quasi-periodic Halo orbits
     at L2 Lagrangian libration point found by Farquhar and Kamel
     
     Found here:
@@ -199,6 +199,7 @@ def third_order_solution_halo(Az, m, tf, num_points, theta, date):
     z = m**(1/2)*z1 + m*z2 + m**(3/2)*z3 + m**2*z4
 
     return x, y, z
+
 
 
 
