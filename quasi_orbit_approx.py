@@ -2,6 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def UTC2JDT(M, D, Y, hr, min, sec, msec=0.0):
+    """
+    Convert UTC calender date to Julian Date (JD)
+
+    Adapted from:
+    https://orbital-mechanics.space/reference/julian-date.html
+    """
     if M < 1 or M > 12:
         raise ValueError("Month must be between 1 and 12, inclusive.")
     if D < 1 or D > 31:
@@ -239,3 +245,4 @@ def plot_orbit_approx(x, y, z, type: str):
     ax.set_title(title)
     ax.legend()
     plt.show()
+
