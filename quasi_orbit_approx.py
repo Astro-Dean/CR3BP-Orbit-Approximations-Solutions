@@ -200,9 +200,42 @@ def fourth_order_solution_halo(Az, m, tf, num_points, theta, date):
 
     return x, y, z
 
+def plot_orbit_approx(x, y, z, type: str):
 
+    if type.lower() == "lissa":
+        title = "3D Plot of Lissajous Orbit @ $ L_2 $"
+    elif type.lower() == "halo":
+        title = "3D Plot of Halo Orbit @ $ L_2 $"
+    else:
+        ValueError("type must be 'lissa' or 'halo'.")
 
+    plt.figure(figsize=(8,8))
+    plt.plot(x, y)
+    plt.axis('equal')
+    plt.xlabel("X")
+    plt.ylabel("Y")
+    plt.grid()
 
+    plt.figure(figsize=(8,8))
+    plt.plot(x, z)
+    plt.axis('equal')
+    plt.xlabel("X")
+    plt.ylabel("Z")
+    plt.grid()
 
+    plt.figure(figsize=(8,8))
+    plt.plot(y, z)
+    plt.axis('equal')
+    plt.xlabel("Y")
+    plt.ylabel("Z")
+    plt.grid()
 
-
+    fig, ax = plt.subplots(subplot_kw={"projection":"3d"})
+    ax.plot(x,y,z, "b")
+    ax.scatter(0,0, 0, color = "black", marker="*", label="L2 Point")
+    ax.set_xlabel("X")
+    ax.set_ylabel("Y")
+    ax.set_zlabel("Z")
+    ax.set_title(title)
+    ax.legend()
+    plt.show()
